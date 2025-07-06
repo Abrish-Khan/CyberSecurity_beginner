@@ -1,0 +1,157 @@
+import random
+import string
+import getpass
+import re
+
+def check_password_strength(password):
+    strength_score = 0
+    feedback = []
+
+    if len(password) >= 12:
+       strength_score +=2
+       feedback.append("✓ Good length (12+ characters)")
+    elif len(password) >= 8:
+        strength_score += 1
+        feedback.append("✓ Minimum length (8+ characters)")
+   else:
+       feedback.append("✗ Too short (minimum 8 characters recommended)")
+
+   has_upper = any(c.isupper() for c in password)
+   has_lower = any(c.islower() for c in password)
+   has_digit = any(c.isdigit() for c in password)
+   has_special = any(c in string.punctuation for c in password)
+
+  if has_upper:
+    strength_score +=1
+    feedback.append("✓ Contains uppercase letters")
+  else:
+    feedback.append("✗ Missing uppercase letters")
+
+  if has_lower:
+    strength_score +=1
+    feedback.append("✓ Contains lowercase letters")
+  else:
+    feedback.append("✗ Missing lowercase letters")
+
+  if has_digit:
+    strength_score +=1
+    feedback.append("✓ Contains digit letters")
+  else:
+    feedback.append("✗ Missing digit letters")
+
+  if has_special:
+    strength_score +=2
+    feedback.append("✓ Contains special characters')
+  else:
+    feedback.append("✗ Missing special characters")
+
+  common_password = ["12345", "admin", "qwerty"]
+  if password.lower in common_password:
+    strength_score = 0
+    feedback.append("!!Warning,  This is very common Password ")
+  return stength_score, feedback
+
+def generate_strong_password(length = 16):
+  characters = string.ascii_letters + string_digits + string_punctuation
+  while True:
+     password = ''.join(random.choice(characters) for _ in range(length))
+
+     if (any(c.isupper() for c in password) and
+         any(c.islower() for c in password) and
+         any(c.isdigit() for c in password) and
+         any(c in string.punctuation for c in password) ):
+     return password
+
+def get_password_analysis(password):
+   upper_count = sum(1 for c in password if c.isupper())
+   lower_count = sum(1 for c in password if c.islower())
+   digit_count = sum(1 for c in password if c.isdigit())
+   special_count = sum(1 for c in password if c in string.punctuation)
+   unique_chars = len(set(password))
+
+   return {
+      "length" : len(password),
+      "uppercase" : upper_count,
+      "lowercase" : lower_count,
+      "digits" : digit_count,
+      "special" : special_count,
+      "unique_chars" : unique_chars,
+      "unique_percent" : round((unique_chars / len(password)) * 100) if password else 0
+   }
+
+def show_password_report(password):
+   score, feedback = check_password_strength(password)
+   analysis = get_password_analysis(password)
+
+   print("\n=== Password Security Report ===")
+   print(f"Password: {'*' * len(password)}")
+   print(f"Length: {len(password)} characters")
+   print(f"Strength Score: {score}/8")
+
+   if score <= 2:
+        print("Strength Rating: Very Weak")
+   elif score <= 4:
+        print("Strength Rating: Weak")
+   elif score <= 6:
+        print("Strength Rating: Moderate")
+   elif score == 7:
+        print("Strength Rating: Strong")
+   else:
+        print("Strength Rating: Very Strong")
+
+   print(/n "Details :")
+    
+   for item in feedback:
+      print(f"{item}")
+      print("\n Character Composition")
+      print(f"  Uppercase letters: {analysis['uppercase']}")
+      print(f"  Lowercase letters: {analysis['lowercase']}")
+      print(f"  Digits: {analysis['digits']}")
+      print(f"  Special characters: {analysis['special']}")
+      print(f"  Unique characters: {analysis['unique_chars']} ({analysis['unique_percent']}%)")
+
+def main():
+  """Main program interface"""
+    print("=== Password Security Tool ===")
+    print("Options:")
+    print("1. Check password strength")
+    print("2. Generate secure password")
+    print("3. Exit")
+
+    while True:
+       try:
+         choice = input("/n Enter your choice (1-3)").strip()
+         if choice == '1':
+           password = getpass.getpass("Enter your password to be analysed (input will be hidden)")
+           show_password_report(password)
+         elif choice == '2':
+                                 length = int(input("Enter password length (12-32 recommended): "))
+                    length = max(8, min(64, length))  # Clamp between 8 and 64
+                    password = generate_secure_password(length)
+                    print(f"\nGenerated password: {password}")
+                    
+                    # Automatically analyze the generated password
+                    show_password_report(password)
+                    
+                    # Offer to copy to clipboard if pyperclip is available
+                    try:
+                        import pyperclip
+                        pyperclip.copy(password)
+                        print("\nPassword copied to clipboard.")
+                    except ImportError:
+                        pass
+                except ValueError:
+                    print("Please enter a valid number.")
+            elif choice == '3':
+                print("Goodbye!")
+                break
+            else:
+                print("Please enter 1, 2, or 3.")
+                
+        except KeyboardInterrupt:
+            print("\nOperation cancelled by user.")
+            break
+if __name__ == "__main__":
+    main()
+  
+    main()
